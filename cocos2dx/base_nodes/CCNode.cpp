@@ -99,7 +99,7 @@ CCNode::CCNode(void)
 CCNode::~CCNode(void)
 {
     CCLOGINFO( "cocos2d: deallocing" );
-    
+
     unregisterScriptHandler();
 
     CC_SAFE_RELEASE(m_pActionManager);
@@ -158,7 +158,7 @@ int CCNode::getZOrder()
 }
 
 /// zOrder setter : private method
-/// used internally to alter the zOrder variable. DON'T call this method manually 
+/// used internally to alter the zOrder variable. DON'T call this method manually
 void CCNode::_setZOrder(int z)
 {
     m_nZOrder = z;
@@ -307,7 +307,7 @@ CCCamera* CCNode::getCamera()
     {
         m_pCamera = new CCCamera();
     }
-    
+
     return m_pCamera;
 }
 
@@ -402,7 +402,7 @@ bool CCNode::isIgnoreAnchorPointForPosition()
 /// isRelativeAnchorPoint setter
 void CCNode::ignoreAnchorPointForPosition(bool newValue)
 {
-    if (newValue != m_bIgnoreAnchorPointForPosition) 
+    if (newValue != m_bIgnoreAnchorPointForPosition)
     {
 		m_bIgnoreAnchorPointForPosition = newValue;
 		m_bIsTransformDirty = m_bIsInverseDirty = true;
@@ -456,7 +456,12 @@ void CCNode::cleanup()
 {
     // actions
     this->stopAllActions();
-    this->unscheduleAllSelectors();    
+    this->unscheduleAllSelectors();
+
+    if ( m_eScriptType != kScriptTypeNone)
+    {
+        CCScriptEngineManager::sharedManager()->getScriptEngine()->executeNodeEvent(this, kCCNodeOnCleanup);
+    }
 
     // timers
     arrayMakeObjectsPerformSelector(m_pChildren, cleanup, CCNode*);
@@ -497,7 +502,7 @@ CCNode* CCNode::getChildByTag(int aTag)
 * to override this method
 */
 void CCNode::addChild(CCNode *child, int zOrder, int tag)
-{    
+{
     CCAssert( child != NULL, "Argument must be non-nil");
     CCAssert( child->m_pParent == NULL, "child already added. It can't be added again");
 
@@ -537,7 +542,7 @@ void CCNode::removeFromParentAndCleanup(bool cleanup)
     if (m_pParent != NULL)
     {
         m_pParent->removeChild(this,cleanup);
-    } 
+    }
 }
 
 /* "remove" logic MUST only be on this method
@@ -602,10 +607,10 @@ void CCNode::removeAllChildrenWithCleanup(bool cleanup)
                 pNode->setParent(NULL);
             }
         }
-        
+
         m_pChildren->removeAllObjects();
     }
-    
+
 }
 
 void CCNode::detachChild(CCNode *child, bool doCleanup)
@@ -715,7 +720,7 @@ void CCNode::visit()
         {
             pNode = (CCNode*) arrayData->arr[i];
 
-            if ( pNode && pNode->m_nZOrder < 0 ) 
+            if ( pNode && pNode->m_nZOrder < 0 )
             {
                 pNode->visit();
             }
@@ -734,7 +739,7 @@ void CCNode::visit()
             {
                 pNode->visit();
             }
-        }        
+        }
     }
     else
     {
@@ -748,7 +753,7 @@ void CCNode::visit()
      {
          m_pGrid->afterDraw(this);
     }
- 
+
     kmGLPopMatrix();
 }
 
@@ -762,7 +767,7 @@ void CCNode::transformAncestors()
 }
 
 void CCNode::transform()
-{    
+{
     kmMat4 transfrom4x4;
 
     // Convert 3x3 into 4x4 matrix
@@ -838,6 +843,8 @@ void CCNode::onExit()
     }
 
     arrayMakeObjectsPerformSelector(m_pChildren, onExit, CCNode*);
+
+
 }
 
 void CCNode::registerScriptHandler(int nHandler)
@@ -989,14 +996,14 @@ void CCNode::pauseSchedulerAndActions()
 
 CCAffineTransform CCNode::nodeToParentTransform(void)
 {
-    if (m_bIsTransformDirty) 
+    if (m_bIsTransformDirty)
     {
 
         // Translate values
         float x = m_tPosition.x;
         float y = m_tPosition.y;
 
-        if (m_bIgnoreAnchorPointForPosition) 
+        if (m_bIgnoreAnchorPointForPosition)
         {
             x += m_tAnchorPointInPoints.x;
             y += m_tAnchorPointInPoints.y;
@@ -1004,7 +1011,7 @@ CCAffineTransform CCNode::nodeToParentTransform(void)
 
         // Rotation values
         float c = 1, s = 0;
-        if (m_fRotation) 
+        if (m_fRotation)
         {
             float radians = -CC_DEGREES_TO_RADIANS(m_fRotation);
             c = cosf(radians);
@@ -1030,7 +1037,7 @@ CCAffineTransform CCNode::nodeToParentTransform(void)
 
         // XXX: Try to inline skew
         // If skew is needed, apply skew and then anchor point
-        if (needsSkewMatrix) 
+        if (needsSkewMatrix)
         {
             CCAffineTransform skewMatrix = CCAffineTransformMake(1.0f, tanf(CC_DEGREES_TO_RADIANS(m_fSkewY)),
                 tanf(CC_DEGREES_TO_RADIANS(m_fSkewX)), 1.0f,
