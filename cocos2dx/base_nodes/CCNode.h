@@ -301,8 +301,8 @@ private:
 
     //! used internally to alter the zOrder variable. DON'T call this method manually
     void setZOrder(int z);
-    
-    
+
+
     void detachChild(CCNode *child, bool doCleanup);
 
     CCPoint convertToWindowSpace(const CCPoint& nodePoint);
@@ -352,7 +352,7 @@ public:
     virtual void onExitTransitionDidStart();
 
     /** Register onEnter/onExit handler script function
-     
+
      Script handler auto unregister after onEnter().
      */
     virtual void registerScriptHandler(int nHandler);
@@ -444,13 +444,6 @@ public:
     // MARMALADE ADDED THIS... SO IT IS NO LONGER SPECIFIC TO CCSprite
     /** updates the quad according the the rotation, position, scale values. */
     virtual void updateTransform(void);
-
-    // MARMALADE ADDED THIS... SO IT IS NO LONGER SPECIFIC TO CCSprite
-    /** updates the quad according the the rotation, position, scale values. */
-    virtual void updateTransform(void);
-
-    /** performs OpenGL view-matrix transformation based on position, scale, rotation and other attributes. */
-    void transform(void);
 
     /** performs OpenGL view-matrix transformation of it's ancestors.
      Generally the ancestors are already transformed, but in certain cases (eg: attaching a FBO)
